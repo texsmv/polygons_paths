@@ -7,6 +7,7 @@ using std::cout;
 int main(int argc, char const *argv[])
 {
     Graph *graph = new Graph();
+    bool dir = true;
 
     graph->insert_node('A', 1, 5);
     graph->insert_node('B', 5, 10);
@@ -17,6 +18,17 @@ int main(int argc, char const *argv[])
     graph->insert_node('G', 5, 0);
     graph->insert_node('H', 10, 4);
 
+    graph->insert_edge('A', 'B', dir);
+    graph->insert_edge('A', 'E', dir);
+    graph->insert_edge('A', 'G', dir);
+    graph->insert_edge('B', 'C', dir);
+    graph->insert_edge('B', 'F', dir);
+    graph->insert_edge('B', 'H', dir);
+    graph->insert_edge('G', 'H', dir);
+    graph->insert_edge('C', 'D', dir);
+    graph->insert_edge('F', 'D', dir);
+    graph->insert_edge('H', 'D', dir);
+
     Node *source = graph->find('A');
     Node *target = graph->find('H');
 
@@ -25,6 +37,5 @@ int main(int argc, char const *argv[])
     delete source;
     delete target;
     delete graph;
-
-    cout << "Hi\n";
+    return 0;
 }

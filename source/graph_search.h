@@ -38,4 +38,85 @@ public:
     ~Graph(){};
 };
 
+Node *Graph::find(char _d)
+{
+    for (unsigned i = 0; i < this->vnode.size(); i++)
+    {
+        if (this->vnode[i]->value == _d)
+        {
+            return this->vnode[i];
+        }
+    }
+    return NULL;
+}
+
+void Graph::insert_node(char _d, float _x, float _y)
+{
+    this->vnode.push_back(new Node(_d, Point(_x, _y)));
+}
+
+void Graph::insert_edge(char _s, char _t, bool _dir)
+{
+    Node *ps = find(_s);
+    Node *pt = find(_t);
+
+    if (ps == NULL or pt == NULL)
+        return;
+
+    if (_dir)
+    {
+        ps->add_edge(pt);
+    }
+    else
+    {
+        ps->add_edge(pt);
+        pt->add_edge(ps);
+    }
+}
+
+void Graph::a_asterisk(Node *_s, Node *_t)
+{
+    vector<char> path;
+
+    typename std::list<Node *>::iterator it;
+    std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
+
+    pq.push(_s);
+    Node *current;
+
+    float h;
+    float g;
+
+    float tx;
+    float ty;
+
+    while (!pq.empty())
+    {
+        current = pq.top();
+        pq.pop();
+
+        cout << current->value << " ";
+
+        if (current == _t)
+        {
+            break;
+        }
+
+        for (it = current->lady.begin(); it != current->lady.end(); it++)
+        {
+            if (!(*it)->visit)
+            {
+                (*it)->visit = true;
+                h = (*it)->distance(_t);
+                g = current->distance(*it);
+                (*it)->hg = h + g;
+                pq.push(*it);
+
+                tx = (*it)->point.x;
+                ty = (*it)->point.y;
+            }
+        }
+    }
+}
+
 #endif

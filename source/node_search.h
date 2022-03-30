@@ -19,6 +19,17 @@ public:
     float distance(Point t);
 };
 
+Point::Point(float _x, float _y)
+{
+    this->x = _x;
+    this->y = _y;
+}
+
+float Point::distance(Point t)
+{
+    return (float)(sqrt(pow(this->x - t.x, 2) + pow(this->y - t.y, 2)));
+}
+
 // Node Class
 class Node
 {
@@ -35,5 +46,23 @@ public:
     void add_edge(Node *);
     float distance(Node *);
 };
+
+Node::Node(char _value, Point _point)
+{
+    this->value = _value;
+    this->point = _point;
+    this->visit = false;
+}
+
+void Node::add_edge(Node *_node)
+{
+    this->lady.push_back(_node);
+    _node->lady.push_back(this);
+}
+
+float Node::distance(Node *_t)
+{
+    return this->point.distance(_t->point);
+}
 
 #endif
