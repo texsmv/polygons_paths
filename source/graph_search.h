@@ -119,4 +119,39 @@ void Graph::a_asterisk(Node *_s, Node *_t)
     }
 }
 
+void Graph::best_first(Node *_s, Node *_t)
+{
+    typename std::list<Node *>::iterator it;
+    std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
+
+    pq.push(_s);
+    Node *current;
+
+    float g;
+
+    while (!pq.empty())
+    {
+        current = pq.top();
+        pq.pop();
+
+        cout << current->value << " ";
+
+        if (current == _t)
+        {
+            break;
+        }
+
+        for (it = current->lady.begin(); it != current->lady.end(); it++)
+        {
+            if (!(*it)->visit)
+            {
+                (*it)->visit = true;
+                g = current->distance(*it);
+                (*it)->hg = g;
+                pq.push(*it);
+            }
+        }
+    }
+}
+
 #endif
