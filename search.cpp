@@ -3,6 +3,19 @@
 #include "source/graph_search.h"
 
 using std::cout;
+using std::string;
+using std::vector;
+
+template <typename T>
+void print_vector(string name, vector<T> _vector)
+{
+    cout << name << " : ";
+    for (unsigned i = 0; i < _vector.size(); i++)
+    {
+        cout << _vector[i] << " ";
+    }
+    cout << "\n";
+}
 
 int main(int argc, char const *argv[])
 {
@@ -32,7 +45,8 @@ int main(int argc, char const *argv[])
     Node *source = graph->find('A');
     Node *target = graph->find('H');
 
-    graph->a_asterisk(source, target);
+    print_vector("A*", graph->a_asterisk(source, target));
+    print_vector("BF", graph->best_first(source, target));
 
     delete source;
     delete target;

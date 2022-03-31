@@ -4,10 +4,13 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <map>
 
 #include "node_search.h"
 
 using std::cout;
+using std::map;
+using std::pair;
 using std::priority_queue;
 using std::vector;
 
@@ -28,12 +31,13 @@ public:
     Graph(){};
 
     Node *find(char _d);
+    void clean();
 
     void insert_node(char, float, float);
     void insert_edge(char, char, bool);
 
-    void best_first(Node *, Node *);
-    void a_asterisk(Node *, Node *);
+    vector<char> best_first(Node *, Node *);
+    vector<char> a_asterisk(Node *, Node *);
 
     ~Graph(){};
 };
@@ -48,6 +52,15 @@ Node *Graph::find(char _d)
         }
     }
     return NULL;
+}
+
+void Graph::clean()
+{
+    for (unsigned i = 0; i < this->vnode.size(); i++)
+    {
+        this->vnode[i]->hg = -1;
+        this->vnode[i]->visit = false;
+    }
 }
 
 void Graph::insert_node(char _d, float _x, float _y)
@@ -74,35 +87,35 @@ void Graph::insert_edge(char _s, char _t, bool _dir)
     }
 }
 
-void Graph::a_asterisk(Node *_s, Node *_t)
+vector<char> Graph::a_asterisk(Node *_s, Node *_t)
 {
-    vector<char> path;
+    this->clean();
+    vector<char> path, tmp;
+    map<char, vector<char>> paths;
 
-    typename std::list<Node *>::iterator it;
-    std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
-
+    priority_queue<Node *, vector<Node *>, Compare> pq;
     pq.push(_s);
+
+    path.push_back(_s->value);
+    paths.insert(pair(_s->value, path));
+
     Node *current;
 
     float h;
     float g;
-
-    float tx;
-    float ty;
 
     while (!pq.empty())
     {
         current = pq.top();
         pq.pop();
 
-        cout << current->value << " ";
-
         if (current == _t)
         {
+            path = paths.at(current->value);
             break;
         }
 
-        for (it = current->lady.begin(); it != current->lady.end(); it++)
+        for (auto it = current->lady.begin(); it != current->lady.end(); it++)
         {
             if (!(*it)->visit)
             {
@@ -112,19 +125,28 @@ void Graph::a_asterisk(Node *_s, Node *_t)
                 (*it)->hg = h + g;
                 pq.push(*it);
 
-                tx = (*it)->point.x;
-                ty = (*it)->point.y;
+                tmp = paths.at(current->value);
+                tmp.push_back((*it)->value);
+                paths.insert(pair((*it)->value, tmp));
             }
         }
     }
+
+    return path;
 }
 
-void Graph::best_first(Node *_s, Node *_t)
+vector<char> Graph::best_first(Node *_s, Node *_t)
 {
-    typename std::list<Node *>::iterator it;
-    std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
+    this->clean();
+    vector<char> path, tmp;
+    map<char, vector<char>> paths;
 
+    std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
     pq.push(_s);
+
+    path.push_back(_s->value);
+    paths.insert(pair(_s->value, path));
+
     Node *current;
 
     float g;
@@ -134,14 +156,13 @@ void Graph::best_first(Node *_s, Node *_t)
         current = pq.top();
         pq.pop();
 
-        cout << current->value << " ";
-
         if (current == _t)
         {
+            path = paths.at(current->value);
             break;
         }
 
-        for (it = current->lady.begin(); it != current->lady.end(); it++)
+        for (auto it = current->lady.begin(); it != current->lady.end(); it++)
         {
             if (!(*it)->visit)
             {
@@ -149,9 +170,15 @@ void Graph::best_first(Node *_s, Node *_t)
                 g = current->distance(*it);
                 (*it)->hg = g;
                 pq.push(*it);
+
+                tmp = paths.at(current->value);
+                tmp.push_back((*it)->value);
+                paths.insert(pair((*it)->value, tmp));
             }
         }
     }
+
+    return path;
 }
 
 #endif
