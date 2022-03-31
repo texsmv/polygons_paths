@@ -1,0 +1,49 @@
+a 1 2
+b 4.5 2
+c 1 0.5
+d 4.5 0.5
+e 2 5
+f 1 3
+g 3 3
+h 5 5
+i 6 5
+j 5 1
+k 6 1
+l 7 -5
+m 8 -5
+n 8 3
+o 7 3
+p 7 2
+q 7.5 2
+r 7.5 1
+s 7 1
+t 8 5
+u 9 5
+v 8.5 2
+O 0 0
+D 9 3
+
+O a c d l f 
+a c b f g O 
+b g f a d h j l
+c a d O l 
+d c b j k s l O 
+e f g h b 
+f e g a b O
+g e f a b h 
+h i j b g e d 
+i h k o t n p s l
+j h k d b l 
+k i j o p q s l
+l s m k i j d c
+m l n v u D
+n o m v t i
+o n p i k t
+p o q r s k i 
+q p r s k 
+r s q p 
+s r q p l k i d 
+t u v n o i 
+u t v m D 
+v u t n m D 
+D u v m

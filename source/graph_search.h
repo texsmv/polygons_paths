@@ -5,20 +5,26 @@
 #include <vector>
 #include <queue>
 #include <map>
+#include <string>
+#include <fstream>
 
 #include "node_search.h"
+#include "graph_utils.h"
 
 using std::cout;
+using std::ifstream;
+using std::make_pair;
 using std::map;
 using std::pair;
 using std::priority_queue;
+using std::string;
 using std::vector;
 
 struct Compare
 {
     bool operator()(Node *const &_s, Node *const &_t)
     {
-        return _s->hg < _t->hg;
+        return _s->hg > _t->hg;
     }
 };
 
@@ -29,8 +35,9 @@ private:
 
 public:
     Graph(){};
+    Graph(string, bool);
 
-    Node *find(char _d);
+    Node *find(char);
     void clean();
 
     void insert_node(char, float, float);
@@ -38,9 +45,44 @@ public:
 
     vector<char> best_first(Node *, Node *);
     vector<char> a_asterisk(Node *, Node *);
+    vector<char> ida_asterisk(Node *, Node *, float);
+
+    unsigned size();
 
     ~Graph(){};
 };
+
+Graph::Graph(string _file, bool _dir = false)
+{
+    ifstream file(_file);
+    string str;
+    bool vertexs_read = false;
+    vector<string> tokens;
+
+    while (getline(file, str))
+    {
+        if (!vertexs_read)
+        {
+            if (str.empty())
+            {
+                vertexs_read = true;
+            }
+            else
+            {
+                tokens = split(str, ' ');
+                this->insert_node(tokens[0][0], stof(tokens[1]), stof(tokens[2]));
+            }
+        }
+        else
+        {
+            tokens = split(str, ' ');
+            for (int i = 1; i < tokens.size(); i++)
+            {
+                this->insert_edge(tokens[0][0], tokens[i][0], _dir);
+            }
+        }
+    }
+}
 
 Node *Graph::find(char _d)
 {
@@ -61,6 +103,11 @@ void Graph::clean()
         this->vnode[i]->hg = -1;
         this->vnode[i]->visit = false;
     }
+}
+
+unsigned Graph::size()
+{
+    return this->vnode.size();
 }
 
 void Graph::insert_node(char _d, float _x, float _y)
@@ -97,7 +144,7 @@ vector<char> Graph::a_asterisk(Node *_s, Node *_t)
     pq.push(_s);
 
     path.push_back(_s->value);
-    paths.insert(pair(_s->value, path));
+    paths.insert(make_pair(_s->value, path));
 
     Node *current;
 
@@ -127,7 +174,64 @@ vector<char> Graph::a_asterisk(Node *_s, Node *_t)
 
                 tmp = paths.at(current->value);
                 tmp.push_back((*it)->value);
-                paths.insert(pair((*it)->value, tmp));
+                paths.insert(make_pair((*it)->value, tmp));
+            }
+        }
+    }
+
+    return path;
+}
+
+vector<char> Graph::ida_asterisk(Node *_s, Node *_t, float infinity = INFINITY)
+{
+    this->clean();
+
+    vector<char> path;
+    map<char, pair<float, vector<char>>> paths;
+    pair<float, vector<char>> tmp;
+
+    priority_queue<Node *, vector<Node *>, Compare> pq;
+    _s->visit = true;
+    pq.push(_s);
+
+    path.push_back(_s->value);
+    paths.insert(make_pair(_s->value, make_pair(0, path)));
+
+    Node *current;
+
+    float h;
+    float g;
+
+    while (!pq.empty())
+    {
+        current = pq.top();
+        pq.pop();
+
+        if (current == _t)
+        {
+            path = paths.at(current->value).second;
+            break;
+        }
+
+        for (auto it = current->lady.begin(); it != current->lady.end(); it++)
+        {
+            if (!(*it)->visit)
+            {
+                (*it)->visit = true;
+                h = (*it)->distance(_t);
+                g = current->distance(*it);
+
+                tmp = paths.at(current->value);
+                if (h + (g + tmp.first) < infinity)
+                {
+
+                    (*it)->hg = h + g;
+                    pq.push(*it);
+
+                    tmp.first += g;
+                    tmp.second.push_back((*it)->value);
+                    paths.insert(make_pair((*it)->value, tmp));
+                }
             }
         }
     }
@@ -142,10 +246,11 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
     map<char, vector<char>> paths;
 
     std::priority_queue<Node *, std::vector<Node *>, Compare> pq;
+    _s->visit = true;
     pq.push(_s);
 
     path.push_back(_s->value);
-    paths.insert(pair(_s->value, path));
+    paths.insert(make_pair(_s->value, path));
 
     Node *current;
 
@@ -173,7 +278,7 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
 
                 tmp = paths.at(current->value);
                 tmp.push_back((*it)->value);
-                paths.insert(pair((*it)->value, tmp));
+                paths.insert(make_pair((*it)->value, tmp));
             }
         }
     }
