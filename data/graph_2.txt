@@ -8,12 +8,12 @@ g 3 3
 O 0 0
 D 9 3
 
-c: d a f O 
-d: c b O D 
-b: d a e f g D 
-a: c b f g O D 
-e: b f g D 
-f: c b a e g O D 
-g: b a e f D 
-O: c d a f 
-D: d b a e f g 
+c d a f O 
+d c b O D 
+b d a e f g D 
+a c b f g O D 
+e b f g D 
+f c b a e g O D 
+g b a e f D 
+O c d a f 
+D d b a e f g 

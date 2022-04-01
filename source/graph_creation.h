@@ -11,20 +11,6 @@
 
 using namespace std;
 
-vector<string> split(const string &s, char delim)
-{
-    vector<string> result;
-    stringstream ss(s);
-    string item;
-
-    while (getline(ss, item, delim))
-    {
-        result.push_back(item);
-    }
-
-    return result;
-}
-
 class Polygon
 {
 public:
@@ -90,14 +76,8 @@ public:
             if (doLinesIntersect(edges[i].first, edges[i].second, lineToInf.first, lineToInf.second))
             {
                 intersectionCount++;
-                // cout << edges[i].first.first << " - " << edges[i].first.second << endl;
-                // cout << edges[i].second.first << " - " << edges[i].second.second << endl;
-
-                // cout << edges[i].second << endl;
             }
         }
-        // cout << intersectionCount << endl;
-
         return !(intersectionCount % 2 == 0);
     }
 };
@@ -189,15 +169,11 @@ public:
     Graph(GraphInput input)
     {
         vertices = input.polygons[0].vertices;
+
         vector<segment> allSegments = input.getAllSegments();
         map<string, Polygon *> polygonsMap = {};
         nodes = {};
         graph = {};
-
-        // for (auto kv : vertices)
-        // {
-        //     nodes.push_back(kv.first);
-        // }
 
         for (int i = 0; i < input.polygons.size(); i++)
         {
@@ -215,21 +191,14 @@ public:
         vertices.insert({"O", input.origin});
         vertices.insert({"D", input.destination});
 
-        // cout << "Nro segments " << allSegments.size() << endl;
-        // cout << "Nro nodes " << nodes.size() << endl;
-
         for (int i = 0; i < nodes.size(); i++)
         {
             graph[nodes[i]] = {};
-            // cout << i << endl;
-            // cout << nodes[i] << "(" << vertices[nodes[i]].first << "," << vertices[nodes[i]].second << ": ";
             for (int j = 0; j < nodes.size(); j++)
             {
-                // cout << j << endl;
                 if (i != j)
                 {
                     Polygon *polygon = polygonsMap[nodes[i]];
-                    // cout << polygon << endl;
                     if (polygon != 0 && polygon->hasNode(nodes[j]))
                     {
                         bool intersected = false;
@@ -242,17 +211,9 @@ public:
                                 intersected = true;
                             }
                         }
-                        // if (nodes[i] == "c" && nodes[j] == "a")
-                        // {
-                        //     cout << "Intersected: " << intersected << endl;
-                        // }
                         if (!intersected)
                         {
-                            if (nodes[i] == "c" && nodes[j] == "a")
-                            {
-                                // cout << "isConnected: " << polygon->isConnected(nodes[i], nodes[j]) << endl;
-                                // cout << "isInside: " << !polygon->isPointInside(make_pair((vertices[nodes[i]].first + vertices[nodes[j]].first) / 2, (vertices[nodes[i]].second + vertices[nodes[j]].second) / 2)) << endl;
-                            }
+
                             if (polygon->isConnected(nodes[i], nodes[j]) || !polygon->isPointInside(make_pair((vertices[nodes[i]].first + vertices[nodes[j]].first) / 2, (vertices[nodes[i]].second + vertices[nodes[j]].second) / 2)))
                             {
                                 graph[nodes[i]].push_back(nodes[j]);
@@ -293,7 +254,7 @@ public:
         // Print all edges
         for (int i = 0; i < nodes.size(); i++)
         {
-            cout << nodes[i] << ": ";
+            cout << nodes[i] << " ";
             vector<string> edges = graph[nodes[i]];
             for (int j = 0; j < edges.size(); j++)
             {
