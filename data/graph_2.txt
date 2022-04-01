@@ -1,19 +1,19 @@
-g 3 3
-f 1 3
-e 2 5
 c 1 0.5
-b 4.5 2
 d 4.5 0.5
+b 4.5 2
 a 1 2
+e 2 5
+f 1 3
+g 3 3
 O 0 0
 D 9 3
 
-g: f e b a D 
-f: g e c b a O D 
-e: g f b D 
-c: f b d a O 
-b: g f e c d a D 
-d: c b a O D 
-a: g f c b d O D 
-O: f c d a 
-D: g f e b d a 
+c: d a f O 
+d: c b O D 
+b: d a e f g D 
+a: c b f g O D 
+e: b f g D 
+f: c b a e g O D 
+g: b a e f D 
+O: c d a f 
+D: d b a e f g 
