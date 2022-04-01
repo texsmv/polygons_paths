@@ -5,6 +5,8 @@
 #include <sstream>
 #include <string>
 #include <map>
+#include <algorithm>
+
 #include "math_helpers.h"
 
 using namespace std;
@@ -36,6 +38,17 @@ public:
             edges.push_back(make_pair(vertices[order[i]], vertices[order[i + 1]]));
         }
     }
+
+    vector<string> polygonVertices()
+    {
+        return vector<string>(order.begin(), order.end() - 1);
+    }
+
+    bool hasNode(string node)
+    {
+        return find(order.begin(), order.end(), node) != order.end();
+    }
+
     // vertices and their coordinates
     point_map vertices;
 
@@ -43,6 +56,30 @@ public:
     vector<string> order;
 
     vector<segment> edges;
+
+    bool isConnected(string nodeA, string nodeB)
+    {
+        vector<string> polVertices = polygonVertices();
+        for (int i = 0; i < polVertices.size(); i++)
+        {
+            if (polVertices[i] == nodeA)
+            {
+                if (i == 0)
+                {
+                    return polVertices[polVertices.size() - 1] == nodeB || polVertices[1] == nodeB;
+                }
+                else if (i == polVertices.size() - 1)
+                {
+                    return polVertices[polVertices.size() - 2] == nodeB || polVertices[0] == nodeB;
+                }
+                else
+                {
+                    return polVertices[i - 1] == nodeB || polVertices[i + 1] == nodeB;
+                }
+            }
+        }
+        return false;
+    }
 
     bool isPointInside(point point)
     {
@@ -53,8 +90,9 @@ public:
             if (doLinesIntersect(edges[i].first, edges[i].second, lineToInf.first, lineToInf.second))
             {
                 intersectionCount++;
-                cout << edges[i].first.first << " - " << edges[i].first.second << endl;
-                cout << edges[i].second.first << " - " << edges[i].second.second << endl;
+                // cout << edges[i].first.first << " - " << edges[i].first.second << endl;
+                // cout << edges[i].second.first << " - " << edges[i].second.second << endl;
+
                 // cout << edges[i].second << endl;
             }
         }
@@ -125,11 +163,6 @@ public:
         {
             this->polygons.push_back(Polygon(vertices, polygons_order[i]));
         }
-
-        // cout << "Nro vertices " << vertices.size() << endl;
-        // cout << "Nro polygons " << polygons.size() << endl;
-        // cout << "Origin " << get<0>(origin) << " - " << get<1>(origin) << endl;
-        // cout << "Destination " << get<0>(destination) << " - " << get<1>(destination) << endl;
     }
 
     vector<segment> getAllSegments()
@@ -157,12 +190,23 @@ public:
     {
         vertices = input.polygons[0].vertices;
         vector<segment> allSegments = input.getAllSegments();
+        map<string, Polygon *> polygonsMap = {};
         nodes = {};
         graph = {};
 
-        for (auto kv : vertices)
+        // for (auto kv : vertices)
+        // {
+        //     nodes.push_back(kv.first);
+        // }
+
+        for (int i = 0; i < input.polygons.size(); i++)
         {
-            nodes.push_back(kv.first);
+            vector<string> pnodes = input.polygons[i].polygonVertices();
+            for (int j = 0; j < pnodes.size(); j++)
+            {
+                nodes.push_back(pnodes[j]);
+                polygonsMap[pnodes[j]] = &(input.polygons[i]);
+            }
         }
 
         nodes.push_back("O");
@@ -177,30 +221,63 @@ public:
         for (int i = 0; i < nodes.size(); i++)
         {
             graph[nodes[i]] = {};
+            // cout << i << endl;
             // cout << nodes[i] << "(" << vertices[nodes[i]].first << "," << vertices[nodes[i]].second << ": ";
             for (int j = 0; j < nodes.size(); j++)
             {
+                // cout << j << endl;
                 if (i != j)
                 {
-
-                    bool intersected = false;
-                    segment seg = make_pair(vertices[nodes[i]], vertices[nodes[j]]);
-                    for (int k = 0; k < allSegments.size(); k++)
+                    Polygon *polygon = polygonsMap[nodes[i]];
+                    // cout << polygon << endl;
+                    if (polygon != 0 && polygon->hasNode(nodes[j]))
                     {
-                        if (doLinesIntersect(seg.first, seg.second, allSegments[k].first, allSegments[k].second))
+                        bool intersected = false;
+                        segment seg = make_pair(vertices[nodes[i]], vertices[nodes[j]]);
+                        vector<segment> polygonSegments = polygon->edges;
+                        for (int k = 0; k < polygonSegments.size(); k++)
                         {
-                            // cout << "BINGO!" << endl;
-                            intersected = true;
+                            if (doLinesIntersect(seg.first, seg.second, allSegments[k].first, allSegments[k].second))
+                            {
+                                intersected = true;
+                            }
+                        }
+                        // if (nodes[i] == "c" && nodes[j] == "a")
+                        // {
+                        //     cout << "Intersected: " << intersected << endl;
+                        // }
+                        if (!intersected)
+                        {
+                            if (nodes[i] == "c" && nodes[j] == "a")
+                            {
+                                // cout << "isConnected: " << polygon->isConnected(nodes[i], nodes[j]) << endl;
+                                // cout << "isInside: " << !polygon->isPointInside(make_pair((vertices[nodes[i]].first + vertices[nodes[j]].first) / 2, (vertices[nodes[i]].second + vertices[nodes[j]].second) / 2)) << endl;
+                            }
+                            if (polygon->isConnected(nodes[i], nodes[j]) || !polygon->isPointInside(make_pair((vertices[nodes[i]].first + vertices[nodes[j]].first) / 2, (vertices[nodes[i]].second + vertices[nodes[j]].second) / 2)))
+                            {
+                                graph[nodes[i]].push_back(nodes[j]);
+                            }
                         }
                     }
-                    if (!intersected)
+                    else
                     {
-                        // cout << nodes[j] << " - ";
-                        graph[nodes[i]].push_back(nodes[j]);
+
+                        bool intersected = false;
+                        segment seg = make_pair(vertices[nodes[i]], vertices[nodes[j]]);
+                        for (int k = 0; k < allSegments.size(); k++)
+                        {
+                            if (doLinesIntersect(seg.first, seg.second, allSegments[k].first, allSegments[k].second))
+                            {
+                                intersected = true;
+                            }
+                        }
+                        if (!intersected)
+                        {
+                            graph[nodes[i]].push_back(nodes[j]);
+                        }
                     }
                 }
             }
-            // cout << endl;
         }
     }
 
