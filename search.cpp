@@ -4,7 +4,7 @@
 
 int main(int argc, char const *argv[])
 {
-    Graph *graph = new Graph("data/real_1.txt");
+    Graph *graph = new Graph("data/graph_1.txt");
 
     Node *source = graph->find('O');
     Node *target = graph->find('D');

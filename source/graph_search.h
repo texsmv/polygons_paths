@@ -417,7 +417,7 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
 vector<char> Graph::id_dfs(Node *_s, Node *_t)
 {
     vector<char> path;
-    int limit = this->vnode.size() / 2;
+    int limit = this->vnode.size() / 4;
 
     cout << "IDDFS\n";
     auto start = high_resolution_clock::now();
