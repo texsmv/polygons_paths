@@ -23,27 +23,27 @@ u 9 5
 O 0 0
 D 9 3
 
-c: d a f l O 
-d: c b h j k l s O 
-b: d a e f g h j l 
-a: c b f g O 
-e: b f g h i t u 
-f: c b a e g O 
-g: b a e f h 
-h: d b e g j i t u 
-j: d b h k l r s 
-k: d j i l n o p q r s t 
-i: e h k l n o p q s t u 
-l: c d b j k i m s O 
-m: l n t v u D 
-n: k i m o t v 
-o: k i n p t 
-p: k i o q r s 
-q: k i p r s 
-r: j k p q s 
-s: d j k i l p q r 
-t: e h k i m n o v u 
-v: m n t u D 
-u: e h i m t v D 
-O: c d a f l 
-D: m v u 
+c d a f l O 
+d c b h j k l s O 
+b d a e f g h j l 
+a c b f g O 
+e b f g h i t u 
+f c b a e g O 
+g b a e f h 
+h d b e g j i t u 
+j d b h k l r s 
+k d j i l n o p q r s t 
+i e h k l n o p q s t u 
+l c d b j k i m s O 
+m l n t v u D 
+n k i m o t v 
+o k i n p t 
+p k i o q r s 
+q k i p r s 
+r j k p q s 
+s d j k i l p q r 
+t e h k i m n o v u 
+v m n t u D 
+u e h i m t v D 
+O c d a f l 
+D m v u 

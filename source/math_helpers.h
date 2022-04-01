@@ -8,6 +8,22 @@ typedef pair<float, float> point;
 typedef pair<point, point> segment;
 typedef unordered_map<string, point> point_map;
 
+/// Splits a String given a character
+vector<string> split(const string &s, char delim)
+{
+    vector<string> result;
+    stringstream ss(s);
+    string item;
+
+    while (getline(ss, item, delim))
+    {
+        result.push_back(item);
+    }
+
+    return result;
+}
+
+/// Checks wether the point  q is inside the segment pr
 bool onSegment(point p, point r, point q)
 {
     if (q.first == p.first && q.second == p.second)
@@ -27,6 +43,7 @@ bool onSegment(point p, point r, point q)
     return false;
 }
 
+// Given
 bool doLinesIntersect(point A, point B, point C, point D)
 {
 
@@ -43,66 +60,17 @@ bool doLinesIntersect(point A, point B, point C, point D)
     double determinant = a1 * b2 - a2 * b1;
 
     point p;
-
     if (determinant == 0)
     {
-        // The lines are parallel. This is simplified
-        // by returning a pair of FLT_MAX
+        // Case when the lines are parallel
         return false;
     }
     else
     {
         double x = (b2 * c1 - b1 * c2) / determinant;
         double y = (a1 * c2 - a2 * c1) / determinant;
-        // cout << "L1: " << A.first << ", " << A.second << "  -  " << B.first << ", " << B.second << endl;
-        // cout << "L2: " << C.first << ", " << C.second << "  -  " << D.first << ", " << D.second << endl;
-        // cout << "x: " << x << "y: " << y << endl;
 
+        //
         return onSegment(A, B, make_pair(x, y)) && onSegment(C, D, make_pair(x, y));
-
-        // float min_x, max_x;
-        // point point1, point2;
-
-        // if (A.first - B.first != 0)
-        // {
-        //     cout << "Right" << endl;
-        //     point1 = A;
-        //     point2 = B;
-
-        //     if (point1.first > point2.first)
-        //     {
-        //         min_x = point2.first;
-        //         max_x = point1.first;
-        //     }
-        //     else
-        //     {
-        //         max_x = point2.first;
-        //         min_x = point1.first;
-        //     }
-        // }
-        // else
-        // {
-        //     cout << "Left" << endl;
-        //     // point1 = C;
-        //     // point2 = D;
-        //     if (point1.second > point2.second)
-        //     {
-        //         min_x = point2.second;
-        //         max_x = point1.second;
-        //     }
-        //     else
-        //     {
-        //         max_x = point2.second;
-        //         min_x = point1.second;
-        //     }
-        // }
-
-        // // Checking wheter the point is within the
-        // // ! Check the > and <
-        // if (x > min_x && x < max_x)
-        // {
-        //     return true;
-        // }
-        // return false;
     }
 }
