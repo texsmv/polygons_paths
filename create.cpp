@@ -4,9 +4,10 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char const *argv[])
 {
-    GraphInput input = GraphInput("data/input_2.txt");
+    string arg1(argv[1]);
+    GraphInput input = GraphInput(arg1);
     Graph graph = Graph(input);
     graph.saveTxt();
 }

@@ -31,6 +31,8 @@
 *.out
 *.app
 exe
+search
+create
 
 # VS Code
 .vscode
