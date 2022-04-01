@@ -10,10 +10,11 @@ int main(int argc, char const *argv[])
     Node *source = graph->find('O');
     Node *target = graph->find('D');
 
-    print_vector("A*", graph->a_asterisk(source, target));
+    print_vector("A*", graph->a_star(source, target));
     print_vector("BF", graph->best_first(source, target));
-    print_vector("IDA*", graph->ida_asterisk(source, target, 14));
-    print_vector("IDDFS", graph->iddfs(source, target, 4));
+    print_vector("IDA*", graph->id_astar(source, target));
+    print_vector("IDDFS", graph->id_dfs(source, target));
+
     delete source;
     delete target;
     delete graph;

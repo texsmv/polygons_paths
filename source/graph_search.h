@@ -46,9 +46,12 @@ public:
     void insert_edge(char, char, bool);
 
     vector<char> best_first(Node *, Node *);
-    vector<char> a_asterisk(Node *, Node *);
-    vector<char> ida_asterisk(Node *, Node *, float);
-    vector<char> iddfs(Node *, Node *, int);
+    vector<char> a_star(Node *, Node *);
+
+    vector<char> id_astar(Node *, Node *);
+    vector<char> id_astar_fun(Node *, Node *, float);
+
+    vector<char> id_dfs(Node *, Node *);
     vector<char> dfs(Node *, Node *, int);
 
     unsigned size();
@@ -138,7 +141,7 @@ void Graph::insert_edge(char _s, char _t, bool _dir)
     }
 }
 
-vector<char> Graph::a_asterisk(Node *_s, Node *_t)
+vector<char> Graph::a_star(Node *_s, Node *_t)
 {
     this->clean();
     vector<char> path, tmp;
@@ -186,7 +189,7 @@ vector<char> Graph::a_asterisk(Node *_s, Node *_t)
     return path;
 }
 
-vector<char> Graph::ida_asterisk(Node *_s, Node *_t, float infinity = INFINITY)
+vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
 {
     this->clean();
 
@@ -226,7 +229,7 @@ vector<char> Graph::ida_asterisk(Node *_s, Node *_t, float infinity = INFINITY)
                 g = current->distance(*it);
 
                 tmp = paths.at(current->value);
-                if (h + (g + tmp.first) < infinity)
+                if (h + (g + tmp.first) < _limit)
                 {
 
                     (*it)->hg = h + g;
@@ -240,6 +243,21 @@ vector<char> Graph::ida_asterisk(Node *_s, Node *_t, float infinity = INFINITY)
         }
     }
 
+    return path;
+}
+
+vector<char> Graph::id_astar(Node *_s, Node *_t)
+{
+    vector<char> path;
+    float limit = 1.5 * _s->distance(_t);
+    float e = 3;
+
+    path = id_astar_fun(_s, _t, limit);
+    while (path.back() != _t->value)
+    {
+        limit += e;
+        path = id_astar_fun(_s, _t, limit);
+    }
     return path;
 }
 
@@ -290,9 +308,6 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
     return path;
 }
 
-
-
-
 vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
 {
     this->clean();
@@ -340,16 +355,18 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
     return path;
 }
 
-vector<char> Graph::iddfs(Node *_s, Node *_t, int _limit) {
+vector<char> Graph::id_dfs(Node *_s, Node *_t)
+{
     vector<char> path;
-    path = dfs(_s, _t, _limit);
-    while (path.back() != _t->value )
+    int limit = this->vnode.size();
+
+    path = dfs(_s, _t, limit);
+    while (path.back() != _t->value)
     {
-        cout<<"Limite "<<_limit<<" ";
-        _limit++;    
-        path = dfs(_s, _t, _limit);
+        limit++;
+        path = dfs(_s, _t, limit);
     }
-    return path;        
+    return path;
 }
 
 #endif
