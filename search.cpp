@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
     print_vector("A*", graph->a_asterisk(source, target));
     print_vector("BF", graph->best_first(source, target));
     print_vector("IDA*", graph->ida_asterisk(source, target, 14));
-
+    print_vector("IDDFS", graph->iddfs(source, target, 4));
     delete source;
     delete target;
     delete graph;

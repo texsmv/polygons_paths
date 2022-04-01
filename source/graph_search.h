@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 #include <fstream>
+#include <stack>
 
 #include "node_search.h"
 #include "graph_utils.h"
@@ -17,6 +18,7 @@ using std::make_pair;
 using std::map;
 using std::pair;
 using std::priority_queue;
+using std::stack;
 using std::string;
 using std::vector;
 
@@ -46,6 +48,8 @@ public:
     vector<char> best_first(Node *, Node *);
     vector<char> a_asterisk(Node *, Node *);
     vector<char> ida_asterisk(Node *, Node *, float);
+    vector<char> iddfs(Node *, Node *, int);
+    vector<char> dfs(Node *, Node *, int);
 
     unsigned size();
 
@@ -284,6 +288,68 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
     }
 
     return path;
+}
+
+
+
+
+vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
+{
+    this->clean();
+    vector<char> path, tmp;
+    map<char, vector<char>> paths;
+
+    std::stack<Node *> stack_dfs;
+
+    path.push_back(_s->value);
+    paths.insert(make_pair(_s->value, path));
+
+    Node *current;
+
+    _s->hg = 0;
+    stack_dfs.push(_s);
+
+    while (!stack_dfs.empty())
+    {
+        current = stack_dfs.top();
+        stack_dfs.pop();
+
+        if (current == _t)
+        {
+            path = paths.at(current->value);
+            break;
+        }
+
+        for (auto it = current->lady.begin(); it != current->lady.end(); it++)
+        {
+            if (!(*it)->visit)
+            {
+                (*it)->visit = true;
+                (*it)->hg = (current->hg) + 1;
+
+                if (current->hg < _limit)
+                {
+                    stack_dfs.push(*it);
+                    tmp = paths.at(current->value);
+                    tmp.push_back((*it)->value);
+                    paths.insert(make_pair((*it)->value, tmp));
+                }
+            }
+        }
+    }
+    return path;
+}
+
+vector<char> Graph::iddfs(Node *_s, Node *_t, int _limit) {
+    vector<char> path;
+    path = dfs(_s, _t, _limit);
+    while (path.back() != _t->value )
+    {
+        cout<<"Limite "<<_limit<<" ";
+        _limit++;    
+        path = dfs(_s, _t, _limit);
+    }
+    return path;        
 }
 
 #endif
