@@ -8,6 +8,7 @@
 #include <string>
 #include <fstream>
 #include <stack>
+#include <chrono>
 
 #include "node_search.h"
 #include "graph_utils.h"
@@ -21,6 +22,8 @@ using std::priority_queue;
 using std::stack;
 using std::string;
 using std::vector;
+
+using namespace std::chrono;
 
 struct Compare
 {
@@ -144,10 +147,15 @@ void Graph::insert_edge(char _s, char _t, bool _dir)
 vector<char> Graph::a_star(Node *_s, Node *_t)
 {
     this->clean();
+    int visits = 1;
+
+    auto start = high_resolution_clock::now();
+
     vector<char> path, tmp;
     map<char, vector<char>> paths;
 
     priority_queue<Node *, vector<Node *>, Compare> pq;
+    _s->visit = true;
     pq.push(_s);
 
     path.push_back(_s->value);
@@ -173,6 +181,7 @@ vector<char> Graph::a_star(Node *_s, Node *_t)
         {
             if (!(*it)->visit)
             {
+                visits++;
                 (*it)->visit = true;
                 h = (*it)->distance(_t);
                 g = current->distance(*it);
@@ -186,12 +195,23 @@ vector<char> Graph::a_star(Node *_s, Node *_t)
         }
     }
 
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "A*\n";
+    cout << "Time: " << duration.count() << " microseconds\n";
+    print_vector("Path", path);
+    cout << "Size: " << path.size() << "\n";
+    cout << "Visits: " << visits << "\n";
+    cout << "\n";
+
     return path;
 }
 
 vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
 {
     this->clean();
+    int visits = 1;
 
     vector<char> path;
     map<char, pair<float, vector<char>>> paths;
@@ -224,6 +244,7 @@ vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
         {
             if (!(*it)->visit)
             {
+                visits++;
                 (*it)->visit = true;
                 h = (*it)->distance(_t);
                 g = current->distance(*it);
@@ -243,6 +264,9 @@ vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
         }
     }
 
+    cout << "Limit: " << _limit << "\n";
+    cout << "Visits: " << visits << "\n";
+
     return path;
 }
 
@@ -252,18 +276,34 @@ vector<char> Graph::id_astar(Node *_s, Node *_t)
     float limit = 1.5 * _s->distance(_t);
     float e = 3;
 
+    cout << "IDA*\n";
+    auto start = high_resolution_clock::now();
+
     path = id_astar_fun(_s, _t, limit);
     while (path.back() != _t->value)
     {
         limit += e;
         path = id_astar_fun(_s, _t, limit);
     }
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "Time: " << duration.count() << " microseconds\n";
+    print_vector("Path", path);
+    cout << "Size: " << path.size() << "\n";
+    cout << "\n";
+
     return path;
 }
 
 vector<char> Graph::best_first(Node *_s, Node *_t)
 {
     this->clean();
+    int visits = 1;
+
+    auto start = high_resolution_clock::now();
+
     vector<char> path, tmp;
     map<char, vector<char>> paths;
 
@@ -293,6 +333,7 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
         {
             if (!(*it)->visit)
             {
+                visits++;
                 (*it)->visit = true;
                 g = current->distance(*it);
                 (*it)->hg = g;
@@ -305,12 +346,24 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
         }
     }
 
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "BF\n";
+    cout << "Time: " << duration.count() << " microseconds\n";
+    print_vector("Path", path);
+    cout << "Size: " << path.size() << "\n";
+    cout << "Visits: " << visits << "\n";
+    cout << "\n";
+
     return path;
 }
 
 vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
 {
     this->clean();
+    int visits = 1;
+
     vector<char> path, tmp;
     map<char, vector<char>> paths;
 
@@ -322,6 +375,7 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
     Node *current;
 
     _s->hg = 0;
+    _s->visit = true;
     stack_dfs.push(_s);
 
     while (!stack_dfs.empty())
@@ -339,6 +393,7 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
         {
             if (!(*it)->visit)
             {
+                visits++;
                 (*it)->visit = true;
                 (*it)->hg = (current->hg) + 1;
 
@@ -352,13 +407,20 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
             }
         }
     }
+
+    cout << "Limit: " << _limit << "\n";
+    cout << "Visits: " << visits << "\n";
+
     return path;
 }
 
 vector<char> Graph::id_dfs(Node *_s, Node *_t)
 {
     vector<char> path;
-    int limit = this->vnode.size();
+    int limit = this->vnode.size() / 2;
+
+    cout << "IDDFS\n";
+    auto start = high_resolution_clock::now();
 
     path = dfs(_s, _t, limit);
     while (path.back() != _t->value)
@@ -366,6 +428,15 @@ vector<char> Graph::id_dfs(Node *_s, Node *_t)
         limit++;
         path = dfs(_s, _t, limit);
     }
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+
+    cout << "Time: " << duration.count() << " microseconds\n";
+    print_vector("Path", path);
+    cout << "Size: " << path.size() << "\n";
+    cout << "\n";
+
     return path;
 }
 
