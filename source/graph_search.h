@@ -147,7 +147,7 @@ void Graph::insert_edge(char _s, char _t, bool _dir)
 vector<char> Graph::a_star(Node *_s, Node *_t)
 {
     this->clean();
-    int visits = 1;
+    int visits = 0;
 
     auto start = high_resolution_clock::now();
 
@@ -168,6 +168,7 @@ vector<char> Graph::a_star(Node *_s, Node *_t)
 
     while (!pq.empty())
     {
+        visits++;
         current = pq.top();
         pq.pop();
 
@@ -181,7 +182,6 @@ vector<char> Graph::a_star(Node *_s, Node *_t)
         {
             if (!(*it)->visit)
             {
-                visits++;
                 (*it)->visit = true;
                 h = (*it)->distance(_t);
                 g = current->distance(*it);
@@ -211,7 +211,7 @@ vector<char> Graph::a_star(Node *_s, Node *_t)
 vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
 {
     this->clean();
-    int visits = 1;
+    int visits = 0;
 
     vector<char> path;
     map<char, pair<float, vector<char>>> paths;
@@ -231,6 +231,7 @@ vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
 
     while (!pq.empty())
     {
+        visits++;
         current = pq.top();
         pq.pop();
 
@@ -244,7 +245,6 @@ vector<char> Graph::id_astar_fun(Node *_s, Node *_t, float _limit)
         {
             if (!(*it)->visit)
             {
-                visits++;
                 (*it)->visit = true;
                 h = (*it)->distance(_t);
                 g = current->distance(*it);
@@ -300,7 +300,7 @@ vector<char> Graph::id_astar(Node *_s, Node *_t)
 vector<char> Graph::best_first(Node *_s, Node *_t)
 {
     this->clean();
-    int visits = 1;
+    int visits = 0;
 
     auto start = high_resolution_clock::now();
 
@@ -322,6 +322,7 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
     {
         current = pq.top();
         pq.pop();
+        visits++;
 
         if (current == _t)
         {
@@ -333,7 +334,6 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
         {
             if (!(*it)->visit)
             {
-                visits++;
                 (*it)->visit = true;
                 g = current->distance(*it);
                 (*it)->hg = g;
@@ -362,7 +362,7 @@ vector<char> Graph::best_first(Node *_s, Node *_t)
 vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
 {
     this->clean();
-    int visits = 1;
+    int visits = 0;
 
     vector<char> path, tmp;
     map<char, vector<char>> paths;
@@ -382,6 +382,7 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
     {
         current = stack_dfs.top();
         stack_dfs.pop();
+        visits++;
 
         if (current == _t)
         {
@@ -393,7 +394,6 @@ vector<char> Graph::dfs(Node *_s, Node *_t, int _limit)
         {
             if (!(*it)->visit)
             {
-                visits++;
                 (*it)->visit = true;
                 (*it)->hg = (current->hg) + 1;
 
